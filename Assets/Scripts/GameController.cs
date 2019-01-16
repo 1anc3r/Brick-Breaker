@@ -178,8 +178,21 @@ public class GameController : MonoBehaviour
     {
         try
         {
+            setBackgroundByBytes(System.IO.File.ReadAllBytes(path));
+        }
+        catch (System.Exception e)
+        {
+            throw e;
+        }
+    }
+
+    // 设置背景图片，同步方法
+    public void setBackgroundByBytes(byte[] bytes)
+    {
+        try
+        {
             Texture2D texture = new Texture2D(Screen.width, Screen.height);
-            texture.LoadImage(System.IO.File.ReadAllBytes(path));
+            texture.LoadImage(bytes);
             if (texture.width / texture.height != Screen.width / Screen.height)
             {
                 texture = scaleTexture(texture, Screen.width, Screen.height);
