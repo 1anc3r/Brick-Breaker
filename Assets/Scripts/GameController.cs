@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
@@ -12,13 +13,13 @@ public class GameController : MonoBehaviour
     public GameObject BulletBall; // BulletBall预制体
     public GameObject BlockBall; // BlockBall预制体
     public GameObject BlockCube; // BlockCube预制体
-    private Image background; // Background预制体
-    private int frame = 0;
+    private Image background;
+    private int frame = 0; // 游戏帧，用于控制射速
     private int score = 0; // 游戏分数
     private int layer = 0; // 层数
     private int capacity = 5; // 弹容量
     private int quantity = 5; // 弹余量
-    private enum GameStatus
+    private enum GameStatus // 游戏状态
     {
         Dead = 0,
         Alive = 1
@@ -29,7 +30,7 @@ public class GameController : MonoBehaviour
     private LayerMask layerMask; // 层遮罩，用于瞄准
     private Vector3 launcher = new Vector3(0, 4.1f, 0); // 发射架
     private Vector3 direction = Vector3.zero; // 发射方向
-    private List<GameObject> bulletBalls;
+    private List<GameObject> bullets;
     private List<GameObject> blocks;
 
     // Start is called before the first frame update
@@ -37,9 +38,10 @@ public class GameController : MonoBehaviour
     {
         // transform = Camera.main.transform;
         layerMask = 1 << (LayerMask.NameToLayer("Plane"));
-        bulletBalls = new List<GameObject>();
+        bullets = new List<GameObject>();
         blocks = new List<GameObject>();
-		setBackground(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
+        background = GameObject.Find("Background Image").GetComponent<Image>();
+        setBackgroundAsync(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
         gamePlay();
     }
 
@@ -58,7 +60,7 @@ public class GameController : MonoBehaviour
                 {
                     if (frame % 10 == 0)
                     {
-                        launchOneBall();
+                        launchOneBullet();
                     }
                 }
             }
@@ -83,12 +85,15 @@ public class GameController : MonoBehaviour
         GUI.Label(new Rect(launcherCopy.x - 50, Screen.height - launcherCopy.y - 50, 100, 50), "" + quantity, style);
         if (GUI.Button(new Rect(launcherCopy.x - 50, 10, 100, 50), "Score : " + score, style))
         {
-            gameOver();
-            gamePlay();
+            clearAllBullets();
         }
         if (status == GameStatus.Dead)
         {
-            if (GUI.Button(new Rect(0, Screen.height / 2 - 25, Screen.width, 50), "Replay", style))
+            if (GUI.Button(new Rect(0, Screen.height * 0.26f, Screen.width, Screen.height * 0.11f), "", style))
+            {
+                gamePlay();
+            }
+            if (GUI.Button(new Rect(0, Screen.height * 0.50f, Screen.width, Screen.height * 0.11f), "", style))
             {
                 gamePlay();
             }
@@ -110,22 +115,24 @@ public class GameController : MonoBehaviour
     public void gameOver()
     {
         status = GameStatus.Dead;
-        clearAllBalls();
+        clearAllBullets();
         clearAllBlocks();
     }
 
-    private void clearAllBalls()
+    // 清空屏幕上的Bullet
+    private void clearAllBullets()
     {
-        foreach (GameObject bulletBall in bulletBalls)
+        foreach (GameObject bulletBall in bullets)
         {
             if (bulletBall != null)
             {
                 GameObject.Destroy(bulletBall);
             }
         }
-        bulletBalls.Clear();
+        bullets.Clear();
     }
 
+    // 清空屏幕上的Block
     private int clearAllBlocks()
     {
         int score = 0;
@@ -166,22 +173,71 @@ public class GameController : MonoBehaviour
         capacity++;
     }
 
-    // 设置背景
-    public void setBackground (string path)
+    // 设置背景图片，同步方法
+    public void setBackground(string path)
     {
-        StartCoroutine(setBackgroundAsync (path));
+        try
+        {
+            Texture2D texture = new Texture2D(Screen.width, Screen.height);
+            texture.LoadImage(System.IO.File.ReadAllBytes(path));
+            if (texture.width / texture.height != Screen.width / Screen.height)
+            {
+                texture = scaleTexture(texture, Screen.width, Screen.height);
+            }
+            background.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            background.sprite = sprite;
+        }
+        catch (System.Exception e)
+        {
+            throw e;
+        }
     }
 
-    // 终端需要使用WWW来加载图片
-    private IEnumerator setBackgroundAsync (string url)
+    // 设置背景图片，异步方法
+    public void setBackgroundAsync(string path)
     {
-        WWW www = new WWW (url);
-        yield return www;
-        Texture2D texture = www.texture;
-        background = GameObject.Find("Background Image").GetComponent<Image>();
-        background.rectTransform.sizeDelta = new Vector2 (Screen.width, Screen.height);
-        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-        background.sprite = sprite;
+        StartCoroutine(setBackgroundByUrl(path));
+    }
+
+    // 设置背景图片，支持本地和网络
+    private IEnumerator setBackgroundByUrl(string path)
+    {
+        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(path))
+        {
+            yield return request.SendWebRequest();
+            Debug.Log("path===" + path);
+            Texture2D texture = new Texture2D(Screen.width, Screen.height);
+            if (request.responseCode == 200)
+            {
+                texture.LoadImage(request.downloadHandler.data);
+                if (texture.width / texture.height != Screen.width / Screen.height)
+                {
+                    texture = scaleTexture(texture, Screen.width, Screen.height);
+                }
+                background.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+                background.sprite = sprite;
+            }
+        }
+    }
+
+    // 缩放Texture
+    private Texture2D scaleTexture(Texture2D source, int targetWidth, int targetHeight)
+    {
+        Texture2D result = new Texture2D(targetWidth, targetHeight, source.format, false);
+        float incX = (1.0f / (float)targetWidth);
+        float incY = (1.0f / (float)targetHeight);
+        for (int i = 0; i < result.height; ++i)
+        {
+            for (int j = 0; j < result.width; ++j)
+            {
+                Color newColor = source.GetPixelBilinear((float)j / (float)result.width, (float)i / (float)result.height);
+                result.SetPixel(j, i, newColor);
+            }
+        }
+        result.Apply();
+        return result;
     }
 
     // 瞄准
@@ -213,39 +269,39 @@ public class GameController : MonoBehaviour
     }
 
     // 发射一个球
-    private void launchOneBall()
+    private void launchOneBullet()
     {
         if (quantity > 0)
         {
             GameObject bulletBall = GameObject.Instantiate(BulletBall, launcher, Quaternion.identity);
             bulletBall.GetComponent<Rigidbody>().AddForce(direction * 512f);
             bulletBall.transform.name = "Bullet Ball";
-            bulletBalls.Add(bulletBall);
+            bullets.Add(bulletBall);
             quantity--;
         }
         else
         {
-            checkAllBalls();
+            checkAllBullets();
         }
     }
 
     // 检测所有球是否在屏幕上
-    private void checkAllBalls()
+    private void checkAllBullets()
     {
-        foreach (GameObject bulletBall in bulletBalls)
+        foreach (GameObject bulletBall in bullets)
         {
             if (bulletBall != null)
             {
                 return;
             }
         }
-        bulletBalls.Clear();
+        bullets.Clear();
         isLaunching = false;
         isReloading = true;
         reload();
     }
 
-    // 放置一堆砖
+    // 放置一堆Block
     private void placeAllBlocks()
     {
         float range = Mathf.Abs(Random.Range(-3f, 3f));
@@ -253,17 +309,17 @@ public class GameController : MonoBehaviour
         {
             placeOneBlock(1.2f, 1.85f);
         }
-        if (range > 0.75 && range <= 2.25)
-        {
-            placeOneBlock(-1.85f, -1.2f);
+        if (range > 0.75 && range < 2.25)
+		{
+			placeOneBlock(-0.35f, 0.35f);
         }
-        if (range > 2.25)
-        {
-            placeOneBlock(-0.35f, 0.35f);
+		if (range >= 2.25)
+		{
+			placeOneBlock(-1.85f, -1.2f);
         }
     }
 
-    // 放置一个砖
+    // 放置一个Block
     private void placeOneBlock(float left, float right)
     {
         Vector3 position = new Vector3(Random.Range(left == 0f ? -2f : left, right == 0f ? 2f : right), -5f, 0f);
