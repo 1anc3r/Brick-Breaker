@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour
     public GameObject BlockBall; // BlockBall预制体
     public GameObject BlockCube; // BlockCube预制体
     private Image background;
+    private AspectRatioFitter fitter;
     private int frame = 0; // 游戏帧，用于控制射速
     private int score = 0; // 游戏分数
     private int layer = 0; // 层数
@@ -28,7 +29,7 @@ public class GameController : MonoBehaviour
     private bool isLaunching = false; // 正在发射
     private bool isReloading = false; // 正在装填
     private LayerMask layerMask; // 层遮罩，用于瞄准
-    private Vector3 launcher = new Vector3(0, 4.1f, 0); // 发射架
+    private Vector3 launcher; // 发射架
     private Vector3 direction = Vector3.zero; // 发射方向
     private List<GameObject> bullets;
     private List<GameObject> blocks;
@@ -37,37 +38,39 @@ public class GameController : MonoBehaviour
     void Start()
     {
         // transform = Camera.main.transform;
+        launcher = new Vector3(0f, 4.1f, 0f);
         layerMask = 1 << (LayerMask.NameToLayer("Plane"));
         bullets = new List<GameObject>();
         blocks = new List<GameObject>();
         background = GameObject.Find("Background Image").GetComponent<Image>();
-        setBackgroundAsync(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
-        gamePlay();
+        fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
+        SetBackgroundAsync(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
+        GamePlay();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (gameCheck())
+        if (GameCheck())
         {
             if (!isReloading)
             {
                 if (!isLaunching)
                 {
-                    aim();
+                    Aim();
                 }
                 else
                 {
                     if (frame % 10 == 0)
                     {
-                        launchOneBullet();
+                        LaunchOneBullet();
                     }
                 }
             }
             else
             {
-                pressAllBlocks();
-                placeAllBlocks();
+                PressAllBlocks();
+                PlaceAllBlocks();
             }
             frame = (frame == 1200) ? 0 : ++frame;
         }
@@ -75,52 +78,54 @@ public class GameController : MonoBehaviour
 
     private void OnGUI()
     {
-        GUIStyle style = new GUIStyle();
-        style.font = font;
-        style.fontSize = 40;
-        style.alignment = (TextAnchor)TextAlignment.Center;
-        style.fontStyle = FontStyle.BoldAndItalic;
+        GUIStyle style = new GUIStyle
+        {
+            font = font,
+            fontSize = 40,
+            alignment = (TextAnchor)TextAlignment.Center,
+            fontStyle = FontStyle.BoldAndItalic
+        };
         style.normal.textColor = Color.white;
         Vector3 launcherCopy = Camera.main.WorldToScreenPoint(launcher);
         GUI.Label(new Rect(launcherCopy.x - 50, Screen.height - launcherCopy.y - 50, 100, 50), "" + quantity, style);
         if (GUI.Button(new Rect(launcherCopy.x - 50, 10, 100, 50), "Score : " + score, style))
         {
-            clearAllBullets();
+            ClearAllBullets();
         }
         if (status == GameStatus.Dead)
         {
             if (GUI.Button(new Rect(0, Screen.height * 0.26f, Screen.width, Screen.height * 0.11f), "", style))
             {
-                gamePlay();
+                GamePlay();
             }
             if (GUI.Button(new Rect(0, Screen.height * 0.50f, Screen.width, Screen.height * 0.11f), "", style))
             {
-                gamePlay();
+                GamePlay();
             }
         }
     }
 
     // 游戏开始
-    public void gamePlay()
+    public void GamePlay()
     {
         score = 0;
         frame = 0;
         isLaunching = false;
         isReloading = false;
         status = GameStatus.Alive;
-        placeAllBlocks();
+        PlaceAllBlocks();
     }
 
     // 游戏结束
-    public void gameOver()
+    public void GameOver()
     {
         status = GameStatus.Dead;
-        clearAllBullets();
-        clearAllBlocks();
+        ClearAllBullets();
+        ClearAllBlocks();
     }
 
     // 清空屏幕上的Bullet
-    private void clearAllBullets()
+    private void ClearAllBullets()
     {
         foreach (GameObject bulletBall in bullets)
         {
@@ -133,14 +138,14 @@ public class GameController : MonoBehaviour
     }
 
     // 清空屏幕上的Block
-    private int clearAllBlocks()
+    private int ClearAllBlocks()
     {
         int score = 0;
         foreach (GameObject block in blocks)
         {
             if (block != null)
             {
-                score += block.GetComponent<Block>().getScore();
+                score += block.GetComponent<Block>().GetScore();
                 GameObject.Destroy(block);
             }
         }
@@ -149,7 +154,7 @@ public class GameController : MonoBehaviour
     }
 
     // 检测游戏状态
-    public bool gameCheck()
+    public bool GameCheck()
     {
         if (status == GameStatus.Alive)
         {
@@ -162,99 +167,81 @@ public class GameController : MonoBehaviour
     }
 
     // 增加分数
-    public void addScore(int score)
+    public void AddScore(int score)
     {
         this.score += score;
     }
 
     // 增加弹容量
-    public void addCapacity()
+    public void AddCapacity()
     {
         capacity++;
     }
 
-    // 设置背景图片，同步方法
-    public void setBackground(string path)
+    // 设置背景图片
+    public void SetBackground(string path)
     {
-        try
-        {
-            setBackgroundByBytes(System.IO.File.ReadAllBytes(path));
-        }
-        catch (System.Exception e)
-        {
-            throw e;
-        }
+        SetBackgroundByBytes(System.IO.File.ReadAllBytes(path));
     }
 
-    // 设置背景图片，同步方法
-    public void setBackgroundByBytes(byte[] bytes)
+    // 通过bytes设置背景图片
+    public void SetBackgroundByBytes(byte[] bytes)
     {
         try
         {
-            Texture2D texture = new Texture2D(Screen.width, Screen.height);
+            Texture2D texture = Texture2D.whiteTexture;
+            fitter.aspectRatio = texture.width * 1f / texture.height;
             texture.LoadImage(bytes);
-            if (texture.width / texture.height != Screen.width / Screen.height)
-            {
-                texture = scaleTexture(texture, Screen.width, Screen.height);
-            }
-            background.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            background.sprite = sprite;
+            background.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
         }
         catch (System.Exception e)
         {
+            Debug.Log("Set background failed. Error: " + e.Message);
             throw e;
         }
     }
 
-    // 设置背景图片，异步方法
-    public void setBackgroundAsync(string path)
+    // 切换背景颜色，同步接口
+    public void SetBackgroundColor(Color color)
     {
-        StartCoroutine(setBackgroundByUrl(path));
+        try
+        {
+            background.color = color;
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log("Set background color failed. Error: " + e.Message);
+            throw e;
+        }
     }
 
-    // 设置背景图片，支持本地和网络
-    private IEnumerator setBackgroundByUrl(string path)
+    // 切换背景图片，异步接口
+    public void SetBackgroundAsync(string path)
     {
-        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(path))
+        StartCoroutine(SetBackgroundByUrl(path));
+    }
+
+    // 通过url/path切换背景
+    private IEnumerator SetBackgroundByUrl(string path)
+    {
+        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(path, true))
         {
             yield return request.SendWebRequest();
-            Debug.Log("path===" + path);
-            Texture2D texture = new Texture2D(Screen.width, Screen.height);
             if (request.responseCode == 200)
             {
-                texture.LoadImage(request.downloadHandler.data);
-                if (texture.width / texture.height != Screen.width / Screen.height)
-                {
-                    texture = scaleTexture(texture, Screen.width, Screen.height);
-                }
-                background.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-                background.sprite = sprite;
+                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                fitter.aspectRatio = texture.width * 1f / texture.height;
+                background.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
             }
-        }
-    }
-
-    // 缩放Texture
-    private Texture2D scaleTexture(Texture2D source, int targetWidth, int targetHeight)
-    {
-        Texture2D result = new Texture2D(targetWidth, targetHeight, source.format, false);
-        float incX = (1.0f / (float)targetWidth);
-        float incY = (1.0f / (float)targetHeight);
-        for (int i = 0; i < result.height; ++i)
-        {
-            for (int j = 0; j < result.width; ++j)
+            else
             {
-                Color newColor = source.GetPixelBilinear((float)j / (float)result.width, (float)i / (float)result.height);
-                result.SetPixel(j, i, newColor);
+                Debug.Log("Set " + path + " to background failed. Error: " + request.error);
             }
         }
-        result.Apply();
-        return result;
     }
 
     // 瞄准
-    private void aim()
+    private void Aim()
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
         if (Input.GetMouseButtonUp(0))
@@ -275,31 +262,31 @@ public class GameController : MonoBehaviour
     }
 
     // 重新装填
-    private void reload()
+    private void Reload()
     {
         frame = 1;
         quantity = capacity;
     }
 
     // 发射一个球
-    private void launchOneBullet()
+    private void LaunchOneBullet()
     {
         if (quantity > 0)
         {
             GameObject bulletBall = GameObject.Instantiate(BulletBall, launcher, Quaternion.identity);
-            bulletBall.GetComponent<Rigidbody>().AddForce(direction * 512f);
             bulletBall.transform.name = "Bullet Ball";
+            bulletBall.GetComponent<Rigidbody>().AddForce(direction * 512f);
             bullets.Add(bulletBall);
             quantity--;
         }
         else
         {
-            checkAllBullets();
+            CheckAllBullets();
         }
     }
 
     // 检测所有球是否在屏幕上
-    private void checkAllBullets()
+    private void CheckAllBullets()
     {
         foreach (GameObject bulletBall in bullets)
         {
@@ -311,29 +298,29 @@ public class GameController : MonoBehaviour
         bullets.Clear();
         isLaunching = false;
         isReloading = true;
-        reload();
+        Reload();
     }
 
     // 放置一堆Block
-    private void placeAllBlocks()
+    private void PlaceAllBlocks()
     {
         float range = Mathf.Abs(Random.Range(-3f, 3f));
         if (range > 0 && range <= 1.25)
         {
-            placeOneBlock(1.2f, 1.85f);
+            PlaceOneBlock(0.95f, 1.85f);
         }
         if (range > 0.75 && range < 2.25)
 		{
-			placeOneBlock(-0.35f, 0.35f);
+			PlaceOneBlock(-0.45f, 0.45f);
         }
 		if (range >= 2.25)
 		{
-			placeOneBlock(-1.85f, -1.2f);
+			PlaceOneBlock(-1.85f, -0.95f);
         }
     }
 
     // 放置一个Block
-    private void placeOneBlock(float left, float right)
+    private void PlaceOneBlock(float left, float right)
     {
         Vector3 position = new Vector3(Random.Range(left == 0f ? -2f : left, right == 0f ? 2f : right), -5f, 0f);
         GameObject block;
@@ -343,13 +330,13 @@ public class GameController : MonoBehaviour
             block = GameObject.Instantiate(BlockBall, position, Quaternion.identity);
             if (layer % 5 == 0)
             {
-                block.GetComponent<Block>().init(1, 1);
+                block.GetComponent<Block>().Init(1, 1);
             }
         }
         else
         {
 			block = GameObject.Instantiate(BlockCube, position, Quaternion.identity);
-			block.GetComponent<Block>().init(0, number);
+			block.GetComponent<Block>().Init(0, number);
             block.transform.rotation = Quaternion.Euler(0f, 0f, 45f);
         }
         block.transform.name = "Block";
@@ -357,7 +344,7 @@ public class GameController : MonoBehaviour
     }
 
     // 推进所有砖
-    private void pressAllBlocks()
+    private void PressAllBlocks()
     {
         foreach (GameObject block in blocks)
         {
@@ -366,7 +353,7 @@ public class GameController : MonoBehaviour
                 Vector3 target = block.transform.position;
                 target.y += 1;
                 block.transform.position = Vector3.MoveTowards(block.transform.position, target, 0.7f);
-                block.GetComponent<Block>().press();
+                block.GetComponent<Block>().Press();
             }
         }
         layer++;

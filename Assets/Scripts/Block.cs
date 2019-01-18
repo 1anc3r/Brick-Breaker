@@ -41,38 +41,38 @@ public class Block : MonoBehaviour
     {
         if (collision.transform.name == "Bullet Ball")
         {
-            Camera.main.GetComponent<GameController>().addScore(1);
-            distoryWhileOutOfScore();
+            Camera.main.GetComponent<GameController>().AddScore(1);
+            DistoryWhileOutOfScore();
         }
     }
 
-    public void init(byte type, int score)
+    public void Init(byte type, int score)
     {
         this.type = (BlockType)type;
         this.score = score;
     }
 
-    public void press()
+    public void Press()
     {
         layer++;
         if(layer == 13)
         {
-            Camera.main.GetComponent<GameController>().gameOver();
+            Camera.main.GetComponent<GameController>().GameOver();
         }
     }
 
-    public int getScore()
+    public int GetScore()
     {
         return score;
     }
 
-    private void distoryWhileOutOfScore()
+    private void DistoryWhileOutOfScore()
     {
         if (--score == 0)
         {
             if(type == BlockType.Expansion)
             {
-                Camera.main.GetComponent<GameController>().addCapacity();
+                Camera.main.GetComponent<GameController>().AddCapacity();
             }
             GameObject.Destroy(gameObject, 0f);
         }

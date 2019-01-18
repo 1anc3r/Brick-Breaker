@@ -13,7 +13,7 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        distoryWhileOutOfScreen();
+        DistoryWhileOutOfScreen();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -21,7 +21,7 @@ public class Bullet : MonoBehaviour
 
     }
 
-    private void distoryWhileOutOfScreen()
+    private void DistoryWhileOutOfScreen()
     {
         if (this.transform.position.y < -6f)
         {
