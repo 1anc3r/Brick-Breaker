@@ -275,7 +275,8 @@ public class GameController : MonoBehaviour
         {
             GameObject bulletBall = GameObject.Instantiate(BulletBall, launcher, Quaternion.identity);
             bulletBall.transform.name = "Bullet Ball";
-            bulletBall.GetComponent<Rigidbody>().AddForce(direction * 512f);
+            bulletBall.GetComponent<Rigidbody>().AddForce(direction * 5f);
+            bulletBall.GetComponent<Rigidbody>().maxAngularVelocity = 25f;
             bullets.Add(bulletBall);
             quantity--;
         }

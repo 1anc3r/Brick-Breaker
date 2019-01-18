@@ -138,7 +138,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 27206708}
-  m_Material: {fileID: 13400000, guid: 0c8c6eddf7036474ea2c75f496a7c656, type: 2}
+  m_Material: {fileID: 13400000, guid: 11680c2c48c7b714a81a5e3b07fd5faf, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -229,7 +229,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 42388507}
-  m_Material: {fileID: 13400000, guid: 0c8c6eddf7036474ea2c75f496a7c656, type: 2}
+  m_Material: {fileID: 13400000, guid: 11680c2c48c7b714a81a5e3b07fd5faf, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -460,7 +460,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   font: {fileID: 12800000, guid: af84ff2deaf45462bada695a5dbe1625, type: 3}
-  Container: {fileID: 1603981208}
   BulletBall: {fileID: 3953756450591761270, guid: c0a9da0a57bcd4f9abf9220f24f9d81b,
     type: 3}
   BlockBall: {fileID: 7997916569196146229, guid: 307c1991c65084153a9d29cf64356e73,
@@ -585,7 +584,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 798993733}
-  m_Material: {fileID: 13400000, guid: 0c8c6eddf7036474ea2c75f496a7c656, type: 2}
+  m_Material: {fileID: 13400000, guid: 11680c2c48c7b714a81a5e3b07fd5faf, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -676,7 +675,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 847003347}
-  m_Material: {fileID: 13400000, guid: 0c8c6eddf7036474ea2c75f496a7c656, type: 2}
+  m_Material: {fileID: 13400000, guid: 11680c2c48c7b714a81a5e3b07fd5faf, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
