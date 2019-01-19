@@ -462,7 +462,7 @@ MonoBehaviour:
   font: {fileID: 12800000, guid: af84ff2deaf45462bada695a5dbe1625, type: 3}
   BulletBall: {fileID: 1331886018768466901, guid: 4b7c6c0936b44e641b3687369f7e1918,
     type: 3}
-  BlockBall: {fileID: 7997916569196146229, guid: 307c1991c65084153a9d29cf64356e73,
+  BlockBall: {fileID: 4645569987674340486, guid: 307c1991c65084153a9d29cf64356e73,
     type: 3}
   BlockCube: {fileID: 233603065687802479, guid: 5a08ba453b7534b5b98d2b87d60d9b7d,
     type: 3}
