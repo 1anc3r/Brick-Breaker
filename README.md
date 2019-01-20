@@ -1,10 +1,8 @@
-# Block-Ball
-
-Unity 3D打砖球
+# Block-Ball（打砖球）by Unity 3D
 
 技术点：
 
-1. 两个摄像机叠加实现更换背景（Android/iOS/Windows/Mac）
+1. 设置背景（Android/iOS/Windows/Mac）
 2. 射线检测，层遮罩
 3. 碰撞检测，反弹
 4. 鼠标点击事件/移动端触屏事件
