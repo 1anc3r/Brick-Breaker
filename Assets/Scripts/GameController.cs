@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
         blocks = new List<GameObject>();
         background = GameObject.Find("Background Image").GetComponent<Image>();
         fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
-        SetBackgroundAsync(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
+        SetBackgroundByBytes(System.IO.File.ReadAllBytes(Path.Combine (Application.streamingAssetsPath, "Background.jpg")));
         GamePlay();
     }
 
@@ -178,12 +178,6 @@ public class GameController : MonoBehaviour
         capacity++;
     }
 
-    // 设置背景图片
-    public void SetBackground(string path)
-    {
-        SetBackgroundByBytes(System.IO.File.ReadAllBytes(path));
-    }
-
     // 通过bytes设置背景图片
     public void SetBackgroundByBytes(byte[] bytes)
     {
@@ -216,13 +210,13 @@ public class GameController : MonoBehaviour
     }
 
     // 切换背景图片，异步接口
-    public void SetBackgroundAsync(string path)
+    public void SetBackgroundByUrl(string path)
     {
-        StartCoroutine(SetBackgroundByUrl(path));
+        StartCoroutine(SetBackgroundByUrlAsync(path));
     }
 
     // 通过url/path切换背景
-    private IEnumerator SetBackgroundByUrl(string path)
+    private IEnumerator SetBackgroundByUrlAsync(string path)
     {
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(path, true))
         {
