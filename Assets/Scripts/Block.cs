@@ -27,13 +27,13 @@ public class Block : MonoBehaviour
         if (type == BlockType.Normal)
         {
             gameObject.GetComponentInChildren<TextMesh>().text = score.ToString();
-            gameObject.GetComponent<MeshRenderer>().material.color = Color.blue;
+            gameObject.GetComponent<MeshRenderer>().material.color = new Color32(33, 150, 243, 255);
         }
         else if (type == BlockType.Expansion)
         {
             gameObject.GetComponentInChildren<TextMesh>().text = "+";
-            gameObject.GetComponentInChildren<TextMesh>().color = Color.black;
-            gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
+            gameObject.GetComponentInChildren<TextMesh>().color = new Color32(42, 40, 40, 255);
+            gameObject.GetComponent<MeshRenderer>().material.color = new Color32(255, 235, 59, 255);
         }
     }
 

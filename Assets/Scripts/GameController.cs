@@ -85,7 +85,7 @@ public class GameController : MonoBehaviour
             alignment = (TextAnchor)TextAlignment.Center,
             fontStyle = FontStyle.BoldAndItalic
         };
-        style.normal.textColor = Color.white;
+        style.normal.textColor = new Color32(223, 210, 192, 255);
         Vector3 launcherCopy = Camera.main.WorldToScreenPoint(launcher);
         GUI.Label(new Rect(launcherCopy.x - 50, Screen.height - launcherCopy.y - 50, 100, 50), "" + quantity, style);
         if (GUI.Button(new Rect(launcherCopy.x - 50, 10, 100, 50), "Score : " + score, style))
