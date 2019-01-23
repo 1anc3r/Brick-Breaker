@@ -440,7 +440,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.7212355, y: -3.4372375, z: -3.7800112}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1317166714}
@@ -490,7 +490,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 615015693}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.7212355, y: 3.4372375, z: -6.219989}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 534669905}
@@ -783,7 +783,7 @@ GameObject:
   - component: {fileID: 877756785}
   - component: {fileID: 877756784}
   - component: {fileID: 877756786}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Background Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -903,7 +903,7 @@ GameObject:
   - component: {fileID: 1317166713}
   - component: {fileID: 1317166712}
   - component: {fileID: 1317166711}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Background Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

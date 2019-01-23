@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
         blocks = new List<GameObject>();
         background = GameObject.Find("Background Image").GetComponent<Image>();
         fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
-        SetBackgroundByBytes(System.IO.File.ReadAllBytes(Path.Combine (Application.streamingAssetsPath, "Background.jpg")));
+        SetBackgroundByUrl(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
         GamePlay();
     }
 
@@ -183,7 +183,7 @@ public class GameController : MonoBehaviour
     {
         try
         {
-            Texture2D texture = Texture2D.whiteTexture;
+            Texture2D texture = new Texture2D(Screen.width, Screen.height);
             fitter.aspectRatio = texture.width * 1f / texture.height;
             texture.LoadImage(bytes);
             background.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
