@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-
-    // private Transform transform;
     public Font font;
     public GameObject BulletBall; // BulletBall预制体
     public GameObject BlockBall; // BlockBall预制体
@@ -34,7 +32,6 @@ public class GameController : MonoBehaviour
     private List<GameObject> bullets;
     private List<GameObject> blocks;
 
-    // Start is called before the first frame update
     void Start()
     {
         // transform = Camera.main.transform;
@@ -48,7 +45,6 @@ public class GameController : MonoBehaviour
         GamePlay();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (GameCheck())
