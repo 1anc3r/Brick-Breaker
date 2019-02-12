@@ -1,6 +1,9 @@
-.vs/
+*.sln
+.vscode/
+Assets/
 Library/
 obj/
-Block-Ball.sln
-Assembly-CSharp.csproj
 Logs/
+Temp/
+.vs/
+*.csproj
