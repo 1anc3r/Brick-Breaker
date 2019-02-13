@@ -16,4 +16,4 @@ To-Do：
 1. 装填Bullet Ball时从两边回到顶部
 2. Block消失Shader
 
-<img src="./Screenshots/Screenshot_0.gif" width = "495" height = "876" alt=""/>
+<img src="./Screenshots/Screenshot_0.gif" width = "270" height = "480" alt=""/>
