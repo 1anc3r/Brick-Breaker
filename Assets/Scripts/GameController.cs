@@ -45,7 +45,7 @@ public class GameController : MonoBehaviour
         GamePlay();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (GameCheck())
         {
@@ -79,7 +79,7 @@ public class GameController : MonoBehaviour
             font = font,
             fontSize = 40,
             alignment = (TextAnchor)TextAlignment.Center,
-            fontStyle = FontStyle.BoldAndItalic
+            fontStyle = FontStyle.Bold
         };
         style.normal.textColor = new Color32(223, 210, 192, 255);
         Vector3 launcherCopy = Camera.main.WorldToScreenPoint(launcher);
