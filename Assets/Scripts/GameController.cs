@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class GameController : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class GameController : MonoBehaviour
     public GameObject BulletBall; // BulletBall预制体
     public GameObject BlockBall; // BlockBall预制体
     public GameObject BlockCube; // BlockCube预制体
+    public GameObject scoreText;
+    public GameObject playText;
+    public GameObject quantityText;
+    public GameObject exitText;
     private Image background;
     private AspectRatioFitter fitter;
     private int frame = 0; // 游戏帧，用于控制射速
@@ -42,7 +47,8 @@ public class GameController : MonoBehaviour
         background = GameObject.Find("Background Image").GetComponent<Image>();
         fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
         SetBackgroundByUrl(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
-        GamePlay();
+        GameObject.Find("Play Button").GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
+        GameObject.Find("Exit Button").GetComponent<Button>().onClick.AddListener(OnGameExitClick);
     }
 
     void FixedUpdate()
@@ -72,33 +78,18 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void OnGUI()
+    private void OnGamePlayClick()
     {
-        GUIStyle style = new GUIStyle
-        {
-            font = font,
-            fontSize = 40,
-            alignment = (TextAnchor)TextAlignment.Center,
-            fontStyle = FontStyle.Bold
-        };
-        style.normal.textColor = new Color32(223, 210, 192, 255);
-        Vector3 launcherCopy = Camera.main.WorldToScreenPoint(launcher);
-        GUI.Label(new Rect(launcherCopy.x - 50, Screen.height - launcherCopy.y - 50, 100, 50), "" + quantity, style);
-        if (GUI.Button(new Rect(launcherCopy.x - 50, 10, 100, 50), "Score : " + score, style))
-        {
-            ClearAllBullets();
-        }
-        if (status == GameStatus.Dead)
-        {
-            if (GUI.Button(new Rect(0, Screen.height * 0.26f, Screen.width, Screen.height * 0.11f), "", style))
-            {
-                GamePlay();
-            }
-            if (GUI.Button(new Rect(0, Screen.height * 0.50f, Screen.width, Screen.height * 0.11f), "", style))
-            {
-                GamePlay();
-            }
-        }
+        scoreText.SetActive(true);
+        quantityText.SetActive(true);
+        playText.SetActive(false);
+        exitText.SetActive(false);
+        GamePlay();
+    }
+
+    private void OnGameExitClick()
+    {
+        GameExit();
     }
 
     // 游戏开始
@@ -115,9 +106,18 @@ public class GameController : MonoBehaviour
     // 游戏结束
     public void GameOver()
     {
+        scoreText.SetActive(false);
+        quantityText.SetActive(false);
+        playText.SetActive(true);
+        exitText.SetActive(true);
         status = GameStatus.Dead;
         ClearAllBullets();
         ClearAllBlocks();
+    }
+
+    public void GameExit()
+    {
+        Application.Quit();
     }
 
     // 清空屏幕上的Bullet
@@ -127,7 +127,7 @@ public class GameController : MonoBehaviour
         {
             if (bulletBall != null)
             {
-                GameObject.Destroy(bulletBall);
+                Destroy(bulletBall);
             }
         }
         bullets.Clear();
@@ -142,7 +142,7 @@ public class GameController : MonoBehaviour
             if (block != null)
             {
                 score += block.GetComponent<Block>().GetScore();
-                GameObject.Destroy(block);
+                Destroy(block);
             }
         }
         blocks.Clear();
@@ -166,6 +166,7 @@ public class GameController : MonoBehaviour
     public void AddScore(int score)
     {
         this.score += score;
+        scoreText.GetComponent<TextMeshProUGUI>().text = "Score:" + this.score;
     }
 
     // 增加弹容量
@@ -256,6 +257,7 @@ public class GameController : MonoBehaviour
     {
         frame = 1;
         quantity = capacity;
+        quantityText.GetComponent<TextMeshProUGUI>().text = quantity.ToString();
     }
 
     // 发射一个球
@@ -263,11 +265,12 @@ public class GameController : MonoBehaviour
     {
         if (quantity > 0)
         {
-            GameObject bulletBall = GameObject.Instantiate(BulletBall, launcher, Quaternion.identity);
+            GameObject bulletBall = Instantiate(BulletBall, launcher, Quaternion.identity);
             bulletBall.transform.name = "Bullet Ball";
             bulletBall.GetComponent<Rigidbody>().velocity = direction * 20f;
             bullets.Add(bulletBall);
             quantity--;
+            quantityText.GetComponent<TextMeshProUGUI>().text = quantity.ToString();
         }
         else
         {
@@ -317,7 +320,7 @@ public class GameController : MonoBehaviour
         int number = (score + 50) / 10;
         if (layer % 5 == 0)
         {
-            block = GameObject.Instantiate(BlockBall, position, Quaternion.identity);
+            block = Instantiate(BlockBall, position, Quaternion.identity);
             if (layer % 5 == 0)
             {
                 block.GetComponent<Block>().Init(1, 1);
@@ -325,7 +328,7 @@ public class GameController : MonoBehaviour
         }
         else
         {
-			block = GameObject.Instantiate(BlockCube, position, Quaternion.identity);
+			block = Instantiate(BlockCube, position, Quaternion.identity);
 			block.GetComponent<Block>().Init(0, number);
             block.transform.rotation = Quaternion.Euler(0f, 0f, 45f);
         }
