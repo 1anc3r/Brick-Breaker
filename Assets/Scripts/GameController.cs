@@ -13,9 +13,9 @@ public class GameController : MonoBehaviour
     public GameObject BlockBall; // BlockBall预制体
     public GameObject BlockCube; // BlockCube预制体
     public GameObject scoreText;
-    public GameObject playText;
     public GameObject quantityText;
-    public GameObject exitText;
+    public GameObject playButton;
+    public GameObject exitButton;
     private Image background;
     private AspectRatioFitter fitter;
     private int frame = 0; // 游戏帧，用于控制射速
@@ -47,8 +47,8 @@ public class GameController : MonoBehaviour
         background = GameObject.Find("Background Image").GetComponent<Image>();
         fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
         SetBackgroundByUrl(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
-        GameObject.Find("Play Button").GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
-        GameObject.Find("Exit Button").GetComponent<Button>().onClick.AddListener(OnGameExitClick);
+        playButton.GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
+        exitButton.GetComponent<Button>().onClick.AddListener(OnGameExitClick);
     }
 
     void FixedUpdate()
@@ -82,8 +82,8 @@ public class GameController : MonoBehaviour
     {
         scoreText.SetActive(true);
         quantityText.SetActive(true);
-        playText.SetActive(false);
-        exitText.SetActive(false);
+        playButton.SetActive(false);
+        exitButton.SetActive(false);
         GamePlay();
     }
 
@@ -108,8 +108,8 @@ public class GameController : MonoBehaviour
     {
         scoreText.SetActive(false);
         quantityText.SetActive(false);
-        playText.SetActive(true);
-        exitText.SetActive(true);
+        playButton.SetActive(true);
+        exitButton.SetActive(true);
         status = GameStatus.Dead;
         ClearAllBullets();
         ClearAllBlocks();
