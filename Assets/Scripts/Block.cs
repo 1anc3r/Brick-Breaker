@@ -50,7 +50,7 @@ public class Block : MonoBehaviour
     public void Press()
     {
         layer++;
-        if(layer == 13)
+        if (layer == 13)
         {
             gameController.GameOver();
         }
@@ -65,7 +65,7 @@ public class Block : MonoBehaviour
     {
         if (--score == 0)
         {
-            if(type == BlockType.Expansion)
+            if (type == BlockType.Expansion)
             {
                 gameController.AddCapacity();
             }

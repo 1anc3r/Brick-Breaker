@@ -23,14 +23,7 @@ public class GameController : MonoBehaviour
     private int layer = 0; // 层数
     private int capacity = 5; // 弹容量
     private int quantity = 5; // 弹余量
-    private enum GameStatus // 游戏状态
-    {
-        Dead = 0,
-        Alive = 1
-    }
     private GameStatus status = GameStatus.Dead; // 游戏状态
-    private bool isLaunching = false; // 正在发射
-    private bool isReloading = false; // 正在装填
     private LayerMask layerMask; // 层遮罩，用于瞄准
     private Vector3 launcher; // 发射架
     private Vector3 direction = Vector3.zero; // 发射方向
@@ -46,44 +39,34 @@ public class GameController : MonoBehaviour
         blocks = new List<GameObject>();
         background = GameObject.Find("Background Image").GetComponent<Image>();
         fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
-        SetBackgroundByUrl(Path.Combine (Application.streamingAssetsPath, "Background.jpg"));
+        SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, "Background.jpg"));
         playButton.GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
         exitButton.GetComponent<Button>().onClick.AddListener(OnGameExitClick);
     }
 
     void FixedUpdate()
     {
-        if (GameCheck())
+        switch (status)
         {
-            if (!isReloading)
-            {
-                if (!isLaunching)
-                {
-                    Aim();
-                }
-                else
-                {
-                    if (frame % 10 == 0)
-                    {
-                        LaunchOneBullet();
-                    }
-                }
-            }
-            else
-            {
+            case GameStatus.Reloading:
                 PressAllBlocks();
                 PlaceAllBlocks();
-            }
-            frame = (frame == 1200) ? 0 : ++frame;
+                break;
+            case GameStatus.Aiming:
+                Aim();
+                break;
+            case GameStatus.Launching:
+                if (frame % 10 == 0)
+                {
+                    LaunchOneBullet();
+                }
+                break;
         }
+        frame = (frame == 1200) ? 0 : ++frame;
     }
 
     private void OnGamePlayClick()
     {
-        scoreText.SetActive(true);
-        quantityText.SetActive(true);
-        playButton.SetActive(false);
-        exitButton.SetActive(false);
         GamePlay();
     }
 
@@ -97,9 +80,11 @@ public class GameController : MonoBehaviour
     {
         score = 0;
         frame = 0;
-        isLaunching = false;
-        isReloading = false;
-        status = GameStatus.Alive;
+        scoreText.SetActive(true);
+        quantityText.SetActive(true);
+        playButton.SetActive(false);
+        exitButton.SetActive(false);
+        status = GameStatus.Aiming;
         PlaceAllBlocks();
     }
 
@@ -110,7 +95,7 @@ public class GameController : MonoBehaviour
         quantityText.SetActive(false);
         playButton.SetActive(true);
         exitButton.SetActive(true);
-        status = GameStatus.Dead;
+        status = GameStatus.Init;
         ClearAllBullets();
         ClearAllBlocks();
     }
@@ -147,19 +132,6 @@ public class GameController : MonoBehaviour
         }
         blocks.Clear();
         return score;
-    }
-
-    // 检测游戏状态
-    public bool GameCheck()
-    {
-        if (status == GameStatus.Alive)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     // 增加分数
@@ -240,7 +212,6 @@ public class GameController : MonoBehaviour
         if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
 #endif
         {
-            isLaunching = true;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo = new RaycastHit();
             if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, layerMask.value))
@@ -248,6 +219,7 @@ public class GameController : MonoBehaviour
                 Debug.DrawLine(ray.origin, hitInfo.point);
                 direction = (hitInfo.point - launcher).normalized;
                 direction.z = 0;
+                status = GameStatus.Launching;
             }
         }
     }
@@ -289,8 +261,7 @@ public class GameController : MonoBehaviour
             }
         }
         bullets.Clear();
-        isLaunching = false;
-        isReloading = true;
+        status = GameStatus.Reloading;
         Reload();
     }
 
@@ -303,12 +274,12 @@ public class GameController : MonoBehaviour
             PlaceOneBlock(0.95f, 1.85f);
         }
         if (range > 0.75 && range < 2.25)
-		{
-			PlaceOneBlock(-0.45f, 0.45f);
+        {
+            PlaceOneBlock(-0.45f, 0.45f);
         }
-		if (range >= 2.25)
-		{
-			PlaceOneBlock(-1.85f, -0.95f);
+        if (range >= 2.25)
+        {
+            PlaceOneBlock(-1.85f, -0.95f);
         }
     }
 
@@ -328,8 +299,8 @@ public class GameController : MonoBehaviour
         }
         else
         {
-			block = Instantiate(BlockCube, position, Quaternion.identity);
-			block.GetComponent<Block>().Init(0, number);
+            block = Instantiate(BlockCube, position, Quaternion.identity);
+            block.GetComponent<Block>().Init(0, number);
             block.transform.rotation = Quaternion.Euler(0f, 0f, 45f);
         }
         block.transform.name = "Block";
@@ -350,6 +321,6 @@ public class GameController : MonoBehaviour
             }
         }
         layer++;
-        isReloading = false;
+        status = GameStatus.Aiming;
     }
 }

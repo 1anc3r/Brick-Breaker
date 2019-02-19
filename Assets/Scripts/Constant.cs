@@ -1,8 +1,17 @@
-﻿// 砖块类型
+﻿// 游戏状态
+public enum GameStatus
+{
+    Init = 0,
+    Reloading,
+    Aiming,
+    Launching,
+}
+
+// 砖块类型
 public enum BlockType
 {
     Normal = 0,
-    Expansion = 1,
-    Explode = 2,
-    Frozen = 3,
+    Expansion,
+    Explode,
+    Frozen,
 }
