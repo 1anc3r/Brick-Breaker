@@ -23,7 +23,7 @@ public class GameController : MonoBehaviour
     private int layer = 0; // 层数
     private int capacity = 5; // 弹容量
     private int quantity = 5; // 弹余量
-    private GameStatus status = GameStatus.Dead; // 游戏状态
+    private GameStatus status = GameStatus.Init; // 游戏状态
     private LayerMask layerMask; // 层遮罩，用于瞄准
     private Vector3 launcher; // 发射架
     private Vector3 direction = Vector3.zero; // 发射方向
