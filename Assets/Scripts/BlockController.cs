@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class Block : MonoBehaviour
+// 砖块控制器
+public class BlockController : MonoBehaviour
 {
     private int score = 10;
     private int layer = 0;

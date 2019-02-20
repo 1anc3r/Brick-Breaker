@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class Bullet : MonoBehaviour
+// 子弹控制器
+public class BulletController : MonoBehaviour
 {
     void Update()
     {

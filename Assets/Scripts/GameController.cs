@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
+// 游戏控制器
 public class GameController : MonoBehaviour
 {
     public Font font;
@@ -32,7 +33,6 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        // transform = Camera.main.transform;
         launcher = new Vector3(0f, 4.1f, 0f);
         layerMask = 1 << (LayerMask.NameToLayer("Plane"));
         bullets = new List<GameObject>();
@@ -49,13 +49,16 @@ public class GameController : MonoBehaviour
         switch (status)
         {
             case GameStatus.Reloading:
+                // 装弹
                 PressAllBlocks();
                 PlaceAllBlocks();
                 break;
             case GameStatus.Aiming:
+                // 瞄准
                 Aim();
                 break;
             case GameStatus.Launching:
+                // 发射
                 if (frame % 10 == 0)
                 {
                     LaunchOneBullet();
@@ -72,7 +75,7 @@ public class GameController : MonoBehaviour
 
     private void OnGameExitClick()
     {
-        GameExit();
+        Application.Quit();
     }
 
     // 游戏开始
@@ -100,11 +103,6 @@ public class GameController : MonoBehaviour
         ClearAllBlocks();
     }
 
-    public void GameExit()
-    {
-        Application.Quit();
-    }
-
     // 清空屏幕上的Bullet
     private void ClearAllBullets()
     {
@@ -126,7 +124,7 @@ public class GameController : MonoBehaviour
         {
             if (block != null)
             {
-                score += block.GetComponent<Block>().GetScore();
+                score += block.GetComponent<BlockController>().GetScore();
                 Destroy(block);
             }
         }
@@ -181,6 +179,10 @@ public class GameController : MonoBehaviour
     // 切换背景图片，异步接口
     public void SetBackgroundByUrl(string path)
     {
+        if (Application.platform != RuntimePlatform.Android)
+        {
+            path = "file://" + path;
+        }
         StartCoroutine(SetBackgroundByUrlAsync(path));
     }
 
@@ -294,13 +296,13 @@ public class GameController : MonoBehaviour
             block = Instantiate(BlockBall, position, Quaternion.identity);
             if (layer % 5 == 0)
             {
-                block.GetComponent<Block>().Init(1, 1);
+                block.GetComponent<BlockController>().Init(1, 1);
             }
         }
         else
         {
             block = Instantiate(BlockCube, position, Quaternion.identity);
-            block.GetComponent<Block>().Init(0, number);
+            block.GetComponent<BlockController>().Init(0, number);
             block.transform.rotation = Quaternion.Euler(0f, 0f, 45f);
         }
         block.transform.name = "Block";
@@ -317,7 +319,7 @@ public class GameController : MonoBehaviour
                 Vector3 target = block.transform.position;
                 target.y += 1;
                 block.transform.position = Vector3.MoveTowards(block.transform.position, target, 0.7f);
-                block.GetComponent<Block>().Press();
+                block.GetComponent<BlockController>().Press();
             }
         }
         layer++;
