@@ -42,6 +42,7 @@ public class GameController : MonoBehaviour
         SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, "Background.jpg"));
         playButton.GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
         exitButton.GetComponent<Button>().onClick.AddListener(OnGameExitClick);
+        GameObject.Find("Quantity Text").GetComponent<RectTransform>().anchoredPosition = new Vector2(-500, -Screen.height * 0.12f);
     }
 
     void FixedUpdate()
@@ -208,7 +209,7 @@ public class GameController : MonoBehaviour
     // 瞄准
     private void Aim()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
         if (Input.GetMouseButtonUp(0))
 #elif UNITY_IPHONE || UNITY_ANDROID
         if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
