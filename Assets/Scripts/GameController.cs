@@ -42,7 +42,6 @@ public class GameController : MonoBehaviour
         SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, "Background.jpg"));
         playButton.GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
         exitButton.GetComponent<Button>().onClick.AddListener(OnGameExitClick);
-        GameObject.Find("Quantity Text").GetComponent<RectTransform>().anchoredPosition = new Vector2(-500, -Screen.height * 0.12f);
     }
 
     void FixedUpdate()
@@ -86,6 +85,7 @@ public class GameController : MonoBehaviour
         frame = 0;
         scoreText.SetActive(true);
         quantityText.SetActive(true);
+        quantityText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-500, -Screen.height * 0.12f);
         playButton.SetActive(false);
         exitButton.SetActive(false);
         status = GameStatus.Aiming;
