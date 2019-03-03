@@ -1,6 +1,6 @@
-# Block-Breaker（打砖球）by Unity 3D
+# Block-Breaker（打砖球）MiniGame by Unity3D
 
-技术点：
+## 技术点:
 
 1. 设置背景（Android/iOS/Windows/Mac）
 2. 射线检测，层遮罩
@@ -11,6 +11,6 @@
 6. GUIStyle/TextMesh控制文字
 6. 游戏逻辑：增加“+”道具，打掉可以增加弹容量
 
-<video id="video" controls="" preload="none" poster="https://github.com/1anc3r/Block-Breaker/tree/master/Screenshots/动图1.gif">
-<source id="mp4" src="https://github.com/1anc3r/Block-Breaker/tree/master/Screenshots/视频1.mp4" type="video/mp4">
-</video>
+## 游戏截图:
+
+<img src="https://github.com/1anc3r/Block-Breaker/tree/master/Screenshots/动图2.gif?raw=true" width = "300" height = "470" alt=""/>
