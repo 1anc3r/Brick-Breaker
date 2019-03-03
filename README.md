@@ -11,9 +11,6 @@
 6. GUIStyle/TextMesh控制文字
 6. 游戏逻辑：增加“+”道具，打掉可以增加弹容量
 
-To-Do：
-
-1. 装填Bullet Ball时从两边回到顶部
-2. Block消失Shader
-
-<img src="./Screenshots/Screenshot_0.gif" width = "270" height = "480" alt=""/>
+<video id="video" controls="" preload="none" poster="https://github.com/1anc3r/Block-Breaker/tree/master/Screenshots/动图1.gif">
+<source id="mp4" src="https://github.com/1anc3r/Block-Breaker/tree/master/Screenshots/视频1.mp4" type="video/mp4">
+</video>
