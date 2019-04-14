@@ -1,4 +1,4 @@
-# Block-Breaker（打砖块）MiniGame by Unity3D
+# Brick-Breaker（打砖块）MiniGame by Unity3D
 
 ## 技术点:
 
