@@ -13,5 +13,4 @@
 
 ## 游戏截图:
 
-<img src="https://github.com/1anc3r/Block-Breaker/blob/master/Screenshots/动图2.gif?raw=true" width = "300" height = "470" alt=""/>
 <img src="https://github.com/1anc3r/Block-Breaker/blob/master/Screenshots/动图1.gif?raw=true" width = "300" height = "470" alt=""/>
